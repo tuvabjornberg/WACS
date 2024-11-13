@@ -6,7 +6,7 @@ f_c = 3500  # Carrier frequency in Hz
 w_c = 2 * np.pi * f_c  # Carrier angular frequency in rad/s
 n = 1
 M = 2
-Tb = 5 / f_c  # Width of the baseband pulse in seconds
+Tb = M / f_c  # Width of the baseband pulse in seconds
 
 # Frequency range (omega values)
 omega = np.arange(-5 * w_c, 5 * w_c, 0.5)
