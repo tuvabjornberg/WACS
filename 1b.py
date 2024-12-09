@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 A_c = 1
 f_c = 3500
 w_c = 2 * np.pi * f_c
-T_b = 300 / f_c  # M = 300
+T_b = 280 / f_c  # M = 300
 N = 1  # Number of rect pulses
 
 # Time vector for x_b(t)
