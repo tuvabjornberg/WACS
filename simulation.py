@@ -28,17 +28,23 @@ from scipy import signal
 # import matplotlib.pyplot as plt
 import wcslib as wcs
 
-
 # f_pass and f_stop are input as tuples in Hz
 # A_pass and A_stop are input in DB
-def filter_def(f_pass, f_stop, A_pass, A_stop, f_sample):
+def filter_bp(f_pass, f_stop, A_pass, A_stop, f_sample):
     fn = f_sample / 2
 
     w_pass = [f / fn for f in f_pass]
     w_stop = [f / fn for f in f_stop]
 
-    return signal.iirdesign(w_pass, w_stop, A_pass, A_stop, ftype="ellip", output="sos")
+    return signal.iirdesign(w_pass, w_stop, A_pass, A_stop, ftype="ellip")
 
+def filter_lp(f_pass, f_stop, A_pass, A_stop, f_sample):
+    fn = f_sample / 2
+
+    w_pass = f_pass / fn
+    w_stop = f_stop / fn
+
+    return signal.iirdesign(w_pass, w_stop, A_pass, A_stop, ftype="ellip")
 
 # f_carrier in Hz
 # x_bt input signal
@@ -47,8 +53,6 @@ def modulator(A_carrier, f_carrier, x_bt):
 
     x_mt = np.zeros(len(x_bt))
     for t in range(len(x_bt)):
-        # print(np.isnan(w_carrier * t))
-
         if x_bt[t] == 1:
             x_mt[t] = x_bt[t] * A_carrier * np.sin(w_carrier * t)
         elif x_bt[t] == -1:
@@ -58,6 +62,18 @@ def modulator(A_carrier, f_carrier, x_bt):
 
     return x_mt
 
+def demodulator(f_carrier, y, f_stop, A_pass, A_stop, f_sample):
+    w_carrier = 2 * np.pi * f_carrier
+
+    y_i_d = y * np.cos(w_carrier)
+    y_q_d = -y * np.sin(w_carrier)
+
+    lp_filter = filter_lp(f_carrier, f_stop, A_pass, A_stop, f_sample)
+    
+    y_i_d_filtered = signal.lfilter(lp_filter[0], lp_filter[1], x=y_i_d)
+    y_q_d_filtered = signal.lfilter(lp_filter[0], lp_filter[1], x=y_q_d)
+    
+    return y_i_d_filtered + 1j*y_q_d_filtered
 
 def main():
     # Parameters
@@ -100,30 +116,44 @@ def main():
 
     # Encode baseband signal
     xb = wcs.encode_baseband_signal(bs, Tb, fs)
-    print(len(xb))
 
     # TODO: Put your transmitter code here (feel free to modify any other parts
     # too, of course)
 
     xb_modulated = modulator(A_carrier, f_carrier, xb)
-    print(len(xb))
 
-    ellip_filter = filter_def(f_pass, f_stop, A_pass, A_stop, fs)
+    ellip_filter = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
 
     xt = signal.lfilter(ellip_filter[0], ellip_filter[1], x=xb_modulated)
-
+    
+    print("x")
+    print(xb)
+    print(xb_modulated)
     print(xt)
-
+    
     # Channel simulation
     # TODO: Enable channel simulation.
-    # yr = wcs.simulate_channel(xt, fs, channel_id)
+    yr = wcs.simulate_channel(xt, fs, channel_id)
 
     # TODO: Put your receiver code here. Replace the three lines below, they
     # are only there for illustration and as an MWE. Feel free to modify any
     # other parts of the code as you see fit, of course.
-    yb = xb * np.exp(1j * np.pi / 5) + 0.1 * np.random.randn(xb.shape[0])
-    ybm = np.abs(yb)
-    ybp = np.angle(yb)
+
+    yb = signal.lfilter(ellip_filter[0], ellip_filter[1], x=yr)
+    yb_demodulated = demodulator(f_carrier, yb, f_pass[1], A_pass, A_stop, fs)
+    ybm = np.abs(yb_demodulated)
+    ybp = np.angle(yb_demodulated)
+    
+    print("\ny")
+    print(yb)
+    print(yb_demodulated)
+    print(ybm)
+    print(ybp)
+    
+    # Example: 
+    # yb = xb * np.exp(1j * np.pi / 5) + 0.1 * np.random.randn(xb.shape[0])
+    # ybm = np.abs(yb)
+    # ybp = np.angle(yb)
 
     # Baseband and string decoding
     br = wcs.decode_baseband_signal(ybm, ybp, Tb, fs)
