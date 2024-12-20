@@ -1,5 +1,5 @@
 #!/bin/bash
-Write-Host "ACTIVATING WACS" 
+echo "ACTIVATING WACS"
 
 VENV_NAME=".venv"
 REQ_FILE="requirements.txt"
@@ -14,6 +14,12 @@ if [ ! -d "$VENV_NAME" ]; then
     fi
 else
     echo "Virtual environment already exists."
+    # Update packages if requirements.txt is modified
+    if [ -f "$REQ_FILE" ]; then
+        echo "Updating packages from requirements.txt"
+        source $VENV_NAME/bin/activate
+        pip install -r $REQ_FILE
+    fi
 fi
 
 # Activate the virtual environment

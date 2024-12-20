@@ -14,6 +14,12 @@ if (-Not (Test-Path $VENV_NAME)) {
     }
 }
 
+# Update packages if requirements.txt is modified
+if (Test-Path $REQ_FILE) {
+    Write-Output "Updating packages from requirements.txt"
+    & "$VENV_NAME\Scripts\python.exe" -m pip install -r $REQ_FILE
+}
+
 # Activate venv
 & "$VENV_NAME\Scripts\Activate.ps1"
 python --version
