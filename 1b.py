@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-A_c = 1
-f_c = 3500
-w_c = 2 * np.pi * f_c
-T_b = 280 / f_c  # M = 300
+A_carrier = 1
+f_carrier = 3500
+w_carrier = 2 * np.pi * f_carrier
+T_b = 280 / f_carrier  # M = 300
 N = 1  # Number of rect pulses
 
 # Time vector for x_b(t)
@@ -23,7 +23,7 @@ def X_b_w(T_b, N, w):  # nothing done for b_n
 
 
 X_m_w = np.array(
-    [A_c * 1j / 2 * (X_b_w(T_b, N, w + w_c) - X_b_w(T_b, N, w - w_c)) for w in freqs]
+    [A_carrier * 1j / 2 * (X_b_w(T_b, N, w + w_carrier) - X_b_w(T_b, N, w - w_carrier)) for w in freqs]
 )
 
 plt.plot(freqs / (2 * np.pi), np.abs(X_m_w))
