@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Simulation template for the wireless communication system project in Signals 
+Simulation template for the wireless communication system project in Signals
 and Transforms.
 
 For plain text inputs, run:
@@ -28,6 +28,7 @@ from scipy import signal
 # import matplotlib.pyplot as plt
 import wcslib as wcs
 
+
 # f_pass and f_stop are input as tuples in Hz
 # A_pass and A_stop are input in DB
 def filter_bp(f_pass, f_stop, A_pass, A_stop, f_sample):
@@ -38,6 +39,7 @@ def filter_bp(f_pass, f_stop, A_pass, A_stop, f_sample):
 
     return signal.iirdesign(w_pass, w_stop, A_pass, A_stop, ftype="ellip")
 
+
 def filter_lp(f_pass, f_stop, A_pass, A_stop, f_sample):
     fn = f_sample / 2
 
@@ -46,34 +48,34 @@ def filter_lp(f_pass, f_stop, A_pass, A_stop, f_sample):
 
     return signal.iirdesign(w_pass, w_stop, A_pass, A_stop, ftype="ellip")
 
+
 # f_carrier in Hz
 # x_bt input signal
-def modulator(A_carrier, f_carrier, x_bt):
-    w_carrier = 2 * np.pi * f_carrier
+def modulator(A_carrier, f_carrier, x_bt, f_sampling):
+    # Time vector based on the sampling frequency and signal length
+    t = np.arange(len(x_bt)) / f_sampling
 
-    x_mt = np.zeros(len(x_bt))
-    for t in range(len(x_bt)):
-        if x_bt[t] == 1:
-            x_mt[t] = x_bt[t] * A_carrier * np.sin(w_carrier * t)
-        elif x_bt[t] == -1:
-            x_mt[t] = x_bt[t] * A_carrier * np.sin(w_carrier * t - np.pi)
-        else:
-            raise ValueError("Error: x_bt contains invalid values.")
+    # Generate the modulated signal using vectorized operations
+    x_mt = A_carrier * np.sin(2 * np.pi * f_carrier * t) * x_bt
 
     return x_mt
 
+
 def demodulator(f_carrier, y, f_stop, A_pass, A_stop, f_sample):
-    w_carrier = 2 * np.pi * f_carrier
 
-    y_i_d = y * np.cos(w_carrier)
-    y_q_d = -y * np.sin(w_carrier)
+    t = np.arange(len(y)) / f_sample
 
-    lp_filter = filter_lp(f_carrier, f_stop, A_pass, A_stop, f_sample)
-    
-    y_i_d_filtered = signal.lfilter(lp_filter[0], lp_filter[1], x=y_i_d)
-    y_q_d_filtered = signal.lfilter(lp_filter[0], lp_filter[1], x=y_q_d)
-    
-    return y_i_d_filtered + 1j*y_q_d_filtered
+    # Mix the received signal with in-phase and quadrature carriers
+    y_i_d = y * np.cos(2 * np.pi * f_carrier * t)
+    y_q_d = -y * np.sin(2 * np.pi * f_carrier * t)
+
+    lp_filter_b, lp_filter_a = filter_lp(f_carrier, f_stop, A_pass, A_stop, f_sample)
+
+    y_i_d_filtered = signal.lfilter(lp_filter_b, lp_filter_a, x=y_i_d)
+    y_q_d_filtered = signal.lfilter(lp_filter_b, lp_filter_a, x=y_q_d)
+
+    return y_i_d_filtered + 1j * y_q_d_filtered
+
 
 def main():
     # Parameters
@@ -106,6 +108,8 @@ def main():
     else:
         print("Warning: No input arguments, using defaults.", file=sys.stderr)
         data = "Hello World!"
+        # data = "aaa"
+        # data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor condimentum enim. Curabitur eget ex ut ante egestas maximus pulvinar sit amet urna. Etiam varius ullamcorper felis ac iaculis. Nulla vitae nisl efficitur, pharetra augue fringilla, tristique nunc. Fusce mollis id massa ac congue. Sed nec porta mauris. Sed consequat."
 
     # Convert string to bit sequence or string bit sequence to numeric bit
     # sequence
@@ -120,17 +124,18 @@ def main():
     # TODO: Put your transmitter code here (feel free to modify any other parts
     # too, of course)
 
-    xb_modulated = modulator(A_carrier, f_carrier, xb)
+    xb_modulated = modulator(A_carrier, f_carrier, xb, fs)
+    xb_demodulated = demodulator(f_carrier, xb_modulated, f_pass[1], A_pass, A_stop, fs)
 
-    ellip_filter = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
+    ellip_filter_b, ellip_filter_a = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
 
-    xt = signal.lfilter(ellip_filter[0], ellip_filter[1], x=xb_modulated)
-    
-    print("x")
-    print(xb)
-    print(xb_modulated)
-    print(xt)
-    
+    xt = signal.lfilter(ellip_filter_b, ellip_filter_a, x=xb_modulated)
+
+    # print("x")
+    # print(xb)
+    # print(xb_modulated)
+    # print(xt)
+
     # Channel simulation
     # TODO: Enable channel simulation.
     yr = wcs.simulate_channel(xt, fs, channel_id)
@@ -139,18 +144,18 @@ def main():
     # are only there for illustration and as an MWE. Feel free to modify any
     # other parts of the code as you see fit, of course.
 
-    yb = signal.lfilter(ellip_filter[0], ellip_filter[1], x=yr)
+    yb = signal.lfilter(ellip_filter_b, ellip_filter_a, x=yr)
     yb_demodulated = demodulator(f_carrier, yb, f_pass[1], A_pass, A_stop, fs)
     ybm = np.abs(yb_demodulated)
     ybp = np.angle(yb_demodulated)
-    
-    print("\ny")
-    print(yb)
-    print(yb_demodulated)
-    print(ybm)
-    print(ybp)
-    
-    # Example: 
+
+    # print("\ny")
+    # print(yb)
+    # print(yb_demodulated)
+    # print(ybm)
+    # print(ybp)
+
+    # Example:
     # yb = xb * np.exp(1j * np.pi / 5) + 0.1 * np.random.randn(xb.shape[0])
     # ybm = np.abs(yb)
     # ybp = np.angle(yb)
