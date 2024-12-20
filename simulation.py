@@ -84,7 +84,6 @@ def main():
     channel_id = 12
     Tb = 0.12  # 2 sidelobes, 1 sidelobe = 0.08
     fs = 35e3
-    Ts = 1 / fs
 
     f_pass = (3475, 3525)
     f_stop = (3450, 3550)
