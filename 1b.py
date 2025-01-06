@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 
 frequency_band = [3475, 3525]
 A_carrier = 1
-f_carrier = (frequency_band[0]+frequency_band[1])/2
+f_carrier = (frequency_band[0] + frequency_band[1]) / 2
 w_carrier = 2 * np.pi * f_carrier
-T_b_1 = 4 / (3525-3475) # 0.08
-T_b_2 = 6 / (3525-3475) # 0.12
+bandwidth = frequency_band[1] - frequency_band[0]
+T_b_1 = 4 / bandwidth  # 0.08
+T_b_2 = 6 / bandwidth  # 0.12
 N = 1  # Number of rect pulses
 
 # Time vector for x_b(t)
@@ -26,14 +27,26 @@ def X_b_w(T_b, N, w, t):  # nothing done for b_n
 
 
 X_m_w_1 = np.array(
-    [A_carrier * 1j / 2 * (X_b_w(T_b_1, N, w + w_carrier, t1) - X_b_w(T_b_1, N, w - w_carrier, t1)) for w in freqs]
+    [
+        A_carrier
+        * 1j
+        / 2
+        * (X_b_w(T_b_1, N, w + w_carrier, t1) - X_b_w(T_b_1, N, w - w_carrier, t1))
+        for w in freqs
+    ]
 )
 
 X_m_w_2 = np.array(
-    [A_carrier * 1j / 2 * (X_b_w(T_b_2, N, w + w_carrier, t2) - X_b_w(T_b_2, N, w - w_carrier, t2)) for w in freqs]
+    [
+        A_carrier
+        * 1j
+        / 2
+        * (X_b_w(T_b_2, N, w + w_carrier, t2) - X_b_w(T_b_2, N, w - w_carrier, t2))
+        for w in freqs
+    ]
 )
 
-plt.figure(figsize=(10,5))
+plt.figure(figsize=(10, 5))
 plt.subplot(1, 2, 1)
 plt.plot(freqs / (2 * np.pi), np.abs(X_m_w_1))
 plt.xlabel("Frequency (Hz)")
