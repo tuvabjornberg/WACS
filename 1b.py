@@ -15,7 +15,7 @@ t1 = np.linspace(-3 * T_b_1, 3 * T_b_1, 1000)
 t2 = np.linspace(-3 * T_b_2, 3 * T_b_2, 1000)
 
 # Frequency vector for plot
-freqs = np.linspace(3400, 3600, 500) * 2 * np.pi
+freqs = np.linspace(3400, 3600, 1000) * 2 * np.pi
 
 
 def X_b_w(T_b, N, w, t):  # nothing done for b_n
