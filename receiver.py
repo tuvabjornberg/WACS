@@ -53,12 +53,14 @@ def main():
     f_carrier = 3500
     A_carrier = 1  # amplitude of input signal
 
-    expected = "Hello World!"
+    # expected = "a"
+    expected = "daffodilly"
+    # expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
     expected_bits = wcs.encode_string(expected)
 
     ellip_filter_b, ellip_filter_a = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
     
-    y = sd.rec(int(20* fs), fs, channels=1, blocking=True)
+    y = sd.rec(int(15* fs), fs, channels=1, blocking=True)
     sd.wait()
     print("Recording done")
 
@@ -76,9 +78,11 @@ def main():
     print("Expected bits:" + str(len(expected_bits)))
     counter = 0
     for i in range(len(expected_bits)-1):
-        if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
-            counter+=1
+        if len(br) == len(expected_bits):
+            if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
+                counter+=1
     
+    print("Number of recieved bits:" + str(len(br)))
     print("Incorrect bits: " + str(counter))
     data_rx = wcs.decode_string(br)
     print("Received: " + data_rx)

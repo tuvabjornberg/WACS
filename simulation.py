@@ -106,7 +106,8 @@ def main():
 
     else:
         print("Warning: No input arguments, using defaults.", file=sys.stderr)
-        data = "Hello World!"
+        data = "a"
+        # data = "Hello World!"
         # data = "aaa"
         # data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor condimentum enim. Curabitur eget ex ut ante egestas maximus pulvinar sit amet urna. Etiam varius ullamcorper felis ac iaculis. Nulla vitae nisl efficitur, pharetra augue fringilla, tristique nunc. Fusce mollis id massa ac congue. Sed nec porta mauris. Sed consequat."
 
