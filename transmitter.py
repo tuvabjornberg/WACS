@@ -32,6 +32,13 @@ def transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_st
 
     # modulate
     xb_modulated = modulator(A_carrier, f_carrier, xb, fs)
+    
+    dmax = 5.0
+    c = 340
+    d = dmax*np.random.rand(1)
+    m = int(np.round(d/c*fs))
+    Nbuf = int(np.round(0.5*fs))
+    xb_modulated = np.concatenate((xb_modulated, np.zeros(m+Nbuf)))
 
     print("modulation done")
 
@@ -63,7 +70,9 @@ def main():
     # Create Signal
     
     # TODO: Add customizable arguments --> Detect input or set defaults
-    data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
+    # data = "a"
+    data = "daffodilly"
+    # data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
 
     transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_stop)
     
