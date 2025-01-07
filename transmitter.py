@@ -54,8 +54,8 @@ def main():
     f_pass = (3475, 3525)
     f_stop = (3450, 3550)
 
-    A_pass = 3  # passband ripples
-    A_stop = 40  # stopband attenuation
+    A_pass = 1  # passband ripples
+    A_stop = 60  # stopband attenuation
 
     f_carrier = 3500
     A_carrier = 1  # amplitude of input signal
@@ -63,7 +63,7 @@ def main():
     # Create Signal
     
     # TODO: Add customizable arguments --> Detect input or set defaults
-    data = "Hello World!"
+    data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
 
     transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_stop)
     

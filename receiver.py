@@ -47,15 +47,15 @@ def main():
     f_pass = (3475, 3525)
     f_stop = (3450, 3550)
 
-    A_pass = 0.1  # passband ripples
-    A_stop = 40  # stopband attenuation
+    A_pass = 1  # passband ripples
+    A_stop = 60  # stopband attenuation
 
     f_carrier = 3500
     A_carrier = 1  # amplitude of input signal
 
-    # expected = "a"
+    #expected = "a"
     expected = "daffodilly"
-    # expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
+    #expected = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
     expected_bits = wcs.encode_string(expected)
 
     ellip_filter_b, ellip_filter_a = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
@@ -77,10 +77,9 @@ def main():
 
     print("Expected bits:" + str(len(expected_bits)))
     counter = 0
-    for i in range(len(expected_bits)-1):
-        if len(br) == len(expected_bits):
-            if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
-                counter+=1
+    for i in range(len(br)):
+        if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
+            counter+=1
     
     print("Number of recieved bits:" + str(len(br)))
     print("Incorrect bits: " + str(counter))
