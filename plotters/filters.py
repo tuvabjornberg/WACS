@@ -6,14 +6,14 @@ from scipy.signal import ellip, ellipord, freqz
 fs = 35000  # Sampling frequency (arbitrary, ensure it's much higher than max frequency)
 fpass_bandpass = [3475, 3525]  # Passband frequencies (Hz)
 fstop_bandpass = [3450, 3550]  # Stopband frequencies (Hz)
-gpass_bandpass = 0.1  # Passband ripple (dB)
-gstop_bandpass = 40  # Stopband attenuation (dB)
+gpass_bandpass = 1  # Passband ripple (dB)
+gstop_bandpass = 60  # Stopband attenuation (dB)
 
 # Lowpass filter specifications
 fpass_lowpass = 50  # Passband edge frequency (Hz)
 fstop_lowpass = 75  # Stopband edge frequency (Hz)
-gpass_lowpass = 0.1  # Passband ripple (dB)
-gstop_lowpass = 40  # Stopband attenuation (dB)
+gpass_lowpass = 1  # Passband ripple (dB)
+gstop_lowpass = 60  # Stopband attenuation (dB)
 
 # Normalize frequencies for Bandpass filter
 wp_bandpass = np.array(fpass_bandpass) / (fs / 2)
