@@ -3,6 +3,7 @@ import numpy as np
 from scipy import signal
 import wcslib as wcs
 import sounddevice as sd
+import matplotlib.pyplot as plt
 
 def filter_bp(f_pass, f_stop, A_pass, A_stop, f_sample):
     fn = f_sample / 2
@@ -22,9 +23,7 @@ def filter_lp(f_pass, f_stop, A_pass, A_stop, f_sample):
 
 
 def demodulator(f_carrier, y, f_stop, A_pass, A_stop, f_sample):
-    print(y)
     y = y[:, 0]
-    print(y)
 
     t = np.arange(len(y)) / f_sample
 
@@ -40,6 +39,7 @@ def demodulator(f_carrier, y, f_stop, A_pass, A_stop, f_sample):
     return y_i_d_filtered + 1j * y_q_d_filtered
 
 def main():
+    rec_time = 60
     channel_id = 12
     Tb = 0.12  # 2 sidelobes, 1 sidelobe = 0.08
     fs = 35e3
@@ -47,18 +47,20 @@ def main():
     f_pass = (3475, 3525)
     f_stop = (3450, 3550)
 
-    A_pass = 0.1  # passband ripples
-    A_stop = 40  # stopband attenuation
+    A_pass = 1  # passband ripples
+    A_stop = 60  # stopband attenuation
 
     f_carrier = 3500
     A_carrier = 1  # amplitude of input signal
 
-    expected = "Hello World!"
+    #expected = "a"
+    #expected = "Hello world!"
+    expected = "Lorem ipsum dolor sit amet, consectetur"
     expected_bits = wcs.encode_string(expected)
 
     ellip_filter_b, ellip_filter_a = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
     
-    y = sd.rec(int(20* fs), fs, channels=1, blocking=True)
+    y = sd.rec(int(rec_time* fs), fs, channels=1, blocking=True)
     sd.wait()
     print("Recording done")
 
@@ -71,17 +73,27 @@ def main():
     print("demodulation done")
 
     br = wcs.decode_baseband_signal(ybm, ybp, Tb, fs)
-    # print(br)
 
     print("Expected bits:" + str(len(expected_bits)))
-    counter = 0
-    for i in range(len(expected_bits)-1):
-        if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
-            counter+=1
+    #counter = 0
+    #for i in range(len(br)):
+    #    if not (expected_bits[i] == 1 and br[i] == True or expected_bits[i] == 0 and br[i] == False):
+    #        counter+=1
     
-    print("Incorrect bits: " + str(counter))
+    t = np.arange(0, rec_time, 1/fs)
+    print("Number of recieved bits:" + str(len(br)))
+    #print("Incorrect bits: " + str(counter))
     data_rx = wcs.decode_string(br)
     print("Received: " + data_rx)
+    plt.subplot(1, 2, 1)
+    plt.plot(t, ybp)
+    plt.grid()
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(t, ybm)
+    plt.grid()
+    
+    plt.show()
 
 if __name__ == "__main__":
     main()
