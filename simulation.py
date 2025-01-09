@@ -88,8 +88,8 @@ def main():
     f_pass = (3475, 3525)
     f_stop = (3450, 3550)
 
-    A_pass = 3  # passband ripples
-    A_stop = 40  # stopband attenuation
+    A_pass = 1  # passband ripples
+    A_stop = 60  # stopband attenuation
 
     f_carrier = 3500
     A_carrier = 1  # amplitude of input signal
@@ -106,10 +106,10 @@ def main():
 
     else:
         print("Warning: No input arguments, using defaults.", file=sys.stderr)
-        data = "a"
+        # data = "a"
         # data = "Hello World!"
         # data = "aaa"
-        # data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor condimentum enim. Curabitur eget ex ut ante egestas maximus pulvinar sit amet urna. Etiam varius ullamcorper felis ac iaculis. Nulla vitae nisl efficitur, pharetra augue fringilla, tristique nunc. Fusce mollis id massa ac congue. Sed nec porta mauris. Sed consequat."
+        data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempor condimentum enim. Curabitur eget ex ut ante egestas maximus pulvinar sit amet urna. Etiam varius ullamcorper felis ac iaculis. Nulla vitae nisl efficitur, pharetra augue fringilla, tristique nunc. Fusce mollis id massa ac congue. Sed nec porta mauris. Sed consequat."
 
     # Convert string to bit sequence or string bit sequence to numeric bit
     # sequence
@@ -131,11 +131,6 @@ def main():
 
     xt = signal.lfilter(ellip_filter_b, ellip_filter_a, x=xb_modulated)
 
-    # print("x")
-    # print(xb)
-    # print(xb_modulated)
-    # print(xt)
-
     # Channel simulation
     # TODO: Enable channel simulation.
     yr = wcs.simulate_channel(xt, fs, channel_id)
@@ -148,17 +143,6 @@ def main():
     yb_demodulated = demodulator(f_carrier, yb, f_pass[1], A_pass, A_stop, fs)
     ybm = np.abs(yb_demodulated)
     ybp = np.angle(yb_demodulated)
-
-    # print("\ny")
-    # print(yb)
-    # print(yb_demodulated)
-    # print(ybm)
-    # print(ybp)
-
-    # Example:
-    # yb = xb * np.exp(1j * np.pi / 5) + 0.1 * np.random.randn(xb.shape[0])
-    # ybm = np.abs(yb)
-    # ybp = np.angle(yb)
 
     # Baseband and string decoding
     br = wcs.decode_baseband_signal(ybm, ybp, Tb, fs)

@@ -33,6 +33,7 @@ def transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_st
     # modulate
     xb_modulated = modulator(A_carrier, f_carrier, xb, fs)
     
+    # from wcslib
     dmax = 5.0
     c = 340
     d = dmax*np.random.rand(1)
@@ -46,11 +47,13 @@ def transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_st
     ellip_filter_b, ellip_filter_a = filter_bp(f_pass, f_stop, A_pass, A_stop, fs)
     xt = signal.lfilter(ellip_filter_b, ellip_filter_a, x=xb_modulated)
 
+    print("bandlimiting done")
+
     # send
     sd.play(xt, fs , blocking=True)
     sd.wait()
 
-    print("bandlimiting done")
+    print("transmission done")
 
 
 def main():
@@ -75,7 +78,6 @@ def main():
     # data = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet aliquet felis. Nulla non tur"
 
     transmitter(data, Tb, fs, A_carrier, f_carrier, f_pass, f_stop, A_pass, A_stop)
-    
     
 if __name__ == "__main__":
     main()
