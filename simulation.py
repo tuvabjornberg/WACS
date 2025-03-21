@@ -26,7 +26,7 @@ import numpy as np
 from scipy import signal
 
 # import matplotlib.pyplot as plt
-import wcslib as wcs
+import lib.wcslib as wcs
 
 
 # f_pass and f_stop are input as tuples in Hz
