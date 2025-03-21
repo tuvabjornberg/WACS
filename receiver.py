@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from scipy import signal
-import wcslib as wcs
+import lib.wcslib as wcs
 import sounddevice as sd
 import matplotlib.pyplot as plt
 
