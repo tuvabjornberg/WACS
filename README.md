@@ -1,2 +1,5 @@
 # WACS
-Wireless Audio Communication System - SigTrans project
+Wireless Audio Communication System - 1TE746 Signaler och transformer project
+
+## Abstract
+A project on a Wireless Audio Communication System focusing on the design and implementation of a digital communication system that transmits data using audio signals. Design of system's components, including a transmitter and receiver that perform encoding, modulation, and filtering to according to provided frequency requirements. The project emphasizes the importance of filter design, particularly a band-limiting filter and a low-pass filter, to minimize noise and interference while maintaining signal integrity. Testing revealed that while the system performs well with short messages, longer transmissions are prone to errors, especially in noisy environments. Trade-offs between robustness and data rate need to be made, concluding that the system is functional but sensitive to external noise.
